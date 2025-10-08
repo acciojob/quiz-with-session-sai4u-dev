@@ -29,10 +29,10 @@ const questions = [
   },
 ];
 
-
+// Load previous selections from session storage
 let progress = JSON.parse(sessionStorage.getItem("progress")) || {};
 
-
+// Renders 5 questions (each inside its own div)
 function renderQuestions() {
   div.innerHTML = "";
 
@@ -51,12 +51,12 @@ function renderQuestions() {
       input.name = `question-${index}`;
       input.value = choice;
 
-      // Restore checked state if user already selected
+      // Restore selection if it was saved
       if (progress[index] === choice) {
         input.checked = true;
       }
 
-      // Save progress to sessionStorage when user selects
+      // Update session storage when user selects
       input.addEventListener("change", () => {
         progress[index] = choice;
         sessionStorage.setItem("progress", JSON.stringify(progress));
@@ -72,7 +72,7 @@ function renderQuestions() {
   });
 }
 
-// Calculate and display score
+// Handles score calculation and local storage
 function submitScore() {
   let score = 0;
 
@@ -82,19 +82,17 @@ function submitScore() {
     }
   });
 
-  scoreDiv.innerText = `Your score is ${score} out of ${questions.length}.`;
+  scoreDiv.textContent = `Your score is ${score} out of ${questions.length}.`;
 
-  // Save final score in localStorage
+  // Save score in localStorage
   localStorage.setItem("score", score);
 }
 
-// Display previously saved score if exists
+// Show previously saved score if exists
 window.addEventListener("load", () => {
+  renderQuestions();
   const savedScore = localStorage.getItem("score");
   if (savedScore !== null) {
-    scoreDiv.innerText = `Your score is ${savedScore} out of ${questions.length}.`;
+    scoreDiv.textContent = `Your score is ${savedScore} out of ${questions.length}.`;
   }
 });
-
-// Render the quiz initially
-renderQuestions();
