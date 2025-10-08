@@ -1,82 +1,19 @@
-/*  your css code here. If applicable */
+/* Global styling */
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f9f9fb;
+  background-color: #f4f6f9;
   color: #333;
   margin: 0;
   padding: 0;
 }
 
+/* Page title */
 h1 {
-  text-align: center;
   background-color: #0078d7;
   color: white;
-  padding: 20px 0;
+  text-align: center;
+  padding: 20px;
   margin: 0;
   font-size: 28px;
 }
 
-#questions {
-  max-width: 600px;
-  margin: 40px auto;
-  padding: 20px 30px;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Individual question blocks */
-#questions > div {
-  margin-bottom: 25px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-#questions p {
-  font-weight: bold;
-  font-size: 18px;
-  margin-bottom: 10px;
-}
-
-
-label {
-  display: block;
-  margin-bottom: 6px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-input[type="radio"] {
-  margin-right: 10px;
-}
-
-
-#submit {
-  display: block;
-  margin: 20px auto;
-  padding: 12px 30px;
-  font-size: 16px;
-  background-color: #0078d7;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-#submit:hover {
-  background-color: #005a9e;
-}
-
-#submit:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
-#score {
-  text-align: center;
-  font-size: 20px;
-  font-weight: bold;
-  color: #0078d7;
-  margin-bottom: 40px;
-}
