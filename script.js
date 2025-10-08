@@ -36,11 +36,11 @@ const progress = {};
 // Display the quiz questions and choices
 function renderQuestions() {
   const questionsElement = document.createElement("div");
+    questionsElement.setAttribute("id", "question");
 
   for (let i = 0; i < questions.length; i++) {
     const question = questions[i];
     const questionElement = document.createElement("div");
-    questionElement.setAttribute("id", "question");
 
     // Add question text
     const questionText = document.createElement("p");
