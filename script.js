@@ -1,4 +1,5 @@
-//your JS code here.
+// your JS code here.
+const div = document.getElementById("questions");
 
 // Do not change code below this line
 // This code will just display the questions to the screen
@@ -30,27 +31,64 @@ const questions = [
   },
 ];
 
+const progress = {};
+
 // Display the quiz questions and choices
 function renderQuestions() {
+  const questionsElement = document.createElement("div");
+
   for (let i = 0; i < questions.length; i++) {
     const question = questions[i];
     const questionElement = document.createElement("div");
-    const questionText = document.createTextNode(question.question);
+    questionElement.setAttribute("id", "question");
+
+    // Add question text
+    const questionText = document.createElement("p");
+    questionText.textContent = question.question;
     questionElement.appendChild(questionText);
+    // Add choices
     for (let j = 0; j < question.choices.length; j++) {
       const choice = question.choices[j];
+
+      const label = document.createElement("label");
       const choiceElement = document.createElement("input");
-      choiceElement.setAttribute("type", "radio");
-      choiceElement.setAttribute("name", `question-${i}`);
-      choiceElement.setAttribute("value", choice);
-      if (userAnswers[i] === choice) {
-        choiceElement.setAttribute("checked", true);
+      choiceElement.type = "radio";
+      choiceElement.name = `question-${i}`;
+      choiceElement.value = choice;
+
+      // Handle selection
+      choiceElement.addEventListener("change", () => {
+        progress[i] = choice;
+      });
+
+      if (progress[i] === choice) {
+        choiceElement.checked = true;
       }
-      const choiceText = document.createTextNode(choice);
-      questionElement.appendChild(choiceElement);
-      questionElement.appendChild(choiceText);
+
+      label.appendChild(choiceElement);
+      label.appendChild(document.createTextNode(choice));
+      questionElement.appendChild(label);
+      questionElement.appendChild(document.createElement("br"));
     }
+
     questionsElement.appendChild(questionElement);
   }
+
+  div.appendChild(questionsElement);
+}
+
+let score = 0;
+
+function submitScore() {
+  for (let i = 0; i < questions.length; i++) {
+    if (questions[i].answer === progress[i]) {
+      score++;
+    }
+  }
+  document.getElementById("score").innerText = `Your score is out of ${score}`;
+  const btn = document.getElementById("submit");
+  btn.disabled = true;
+  sessionStorage.setItem("score", score);
+  localStorage.setItem("progress", progress);
 }
 renderQuestions();
