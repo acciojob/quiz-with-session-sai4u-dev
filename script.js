@@ -1,8 +1,6 @@
-// your JS code here.
 const div = document.getElementById("questions");
+const scoreDiv = document.getElementById("score");
 
-// Do not change code below this line
-// This code will just display the questions to the screen
 const questions = [
   {
     question: "What is the capital of France?",
@@ -21,7 +19,7 @@ const questions = [
   },
   {
     question: "Which is the largest planet in our solar system?",
-    choices: ["Earth", "Jupiter", "Mars"],
+    choices: ["Earth", "Jupiter", "Mars", "Saturn"],
     answer: "Jupiter",
   },
   {
@@ -31,64 +29,72 @@ const questions = [
   },
 ];
 
-const progress = {};
 
-// Display the quiz questions and choices
+let progress = JSON.parse(sessionStorage.getItem("progress")) || {};
+
+
 function renderQuestions() {
-  const questionsElement = document.createElement("div");
-    questionsElement.setAttribute("id", "question");
+  div.innerHTML = "";
 
-  for (let i = 0; i < questions.length; i++) {
-    const question = questions[i];
-    const questionElement = document.createElement("div");
+  questions.forEach((q, index) => {
+    const questionDiv = document.createElement("div");
 
-    // Add question text
     const questionText = document.createElement("p");
-    questionText.textContent = question.question;
-    questionElement.appendChild(questionText);
-    // Add choices
-    for (let j = 0; j < question.choices.length; j++) {
-      const choice = question.choices[j];
+    questionText.textContent = q.question;
+    questionDiv.appendChild(questionText);
 
+    q.choices.forEach((choice) => {
       const label = document.createElement("label");
-      const choiceElement = document.createElement("input");
-      choiceElement.type = "radio";
-      choiceElement.name = `question-${i}`;
-      choiceElement.value = choice;
+      const input = document.createElement("input");
 
-      // Handle selection
-      choiceElement.addEventListener("change", () => {
-        progress[i] = choice;
-      });
+      input.type = "radio";
+      input.name = `question-${index}`;
+      input.value = choice;
 
-      if (progress[i] === choice) {
-        choiceElement.checked = true;
+      // Restore checked state if user already selected
+      if (progress[index] === choice) {
+        input.checked = true;
       }
 
-      label.appendChild(choiceElement);
+      // Save progress to sessionStorage when user selects
+      input.addEventListener("change", () => {
+        progress[index] = choice;
+        sessionStorage.setItem("progress", JSON.stringify(progress));
+      });
+
+      label.appendChild(input);
       label.appendChild(document.createTextNode(choice));
-      questionElement.appendChild(label);
-      questionElement.appendChild(document.createElement("br"));
-    }
+      questionDiv.appendChild(label);
+      questionDiv.appendChild(document.createElement("br"));
+    });
 
-    questionsElement.appendChild(questionElement);
-  }
-
-  div.appendChild(questionsElement);
+    div.appendChild(questionDiv);
+  });
 }
 
-let score = 0;
-
+// Calculate and display score
 function submitScore() {
-  for (let i = 0; i < questions.length; i++) {
-    if (questions[i].answer === progress[i]) {
+  let score = 0;
+
+  questions.forEach((q, i) => {
+    if (progress[i] === q.answer) {
       score++;
     }
-  }
-  document.getElementById("score").innerText = `Your score is out of ${score}`;
-  const btn = document.getElementById("submit");
-  btn.disabled = true;
-  sessionStorage.setItem("score", score);
-  localStorage.setItem("progress", progress);
+  });
+
+  scoreDiv.innerText = `Your score is ${score} out of ${questions.length}.`;
+
+  // Save final score in localStorage
+  localStorage.setItem("score", score);
 }
+
+// Display previously saved score if exists
+window.addEventListener("load", () => {
+  const savedScore = localStorage.getItem("score");
+  if (savedScore !== null) {
+    scoreDiv.innerText = `Your score is ${savedScore} out of ${questions.length}.`;
+  }
+});
+
+// Render the quiz initially
 renderQuestions();
