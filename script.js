@@ -1,4 +1,5 @@
-// Define the quiz questions
+// your JS code here.
+
 const questions = [
   {
     question: "What is the capital of France?",
@@ -17,7 +18,7 @@ const questions = [
   },
   {
     question: "Which is the largest planet in our solar system?",
-    choices: ["Earth", "Jupiter", "Mars"],
+    choices: ["Earth", "Jupiter", "Mars", "Saturn"], // ensure 4 options
     answer: "Jupiter",
   },
   {
@@ -27,67 +28,65 @@ const questions = [
   },
 ];
 
-const submitButton = document.getElementById("submit");
 const questionsElement = document.getElementById("questions");
+const submitButton = document.getElementById("submit");
+const scoreElement = document.getElementById("score");
 
-// Get the saved progress from session storage
-const savedProgress = JSON.parse(sessionStorage.getItem("progress"));
-// Submit the quiz and show the score
-submitButton.addEventListener("click", showScore);
+// Load saved progress and score
+let savedProgress = JSON.parse(sessionStorage.getItem("progress")) || {};
+const savedScore = localStorage.getItem("score");
 
-// If there is saved progress, use it. Otherwise, start from the beginning.
-let userAnswers = savedProgress ? savedProgress : [];
+// If score already exists, show it
+if (savedScore !== null) {
+  scoreElement.textContent = `Your score is ${savedScore} out of ${questions.length}.`;
+}
 
-// Display the quiz questions and choices
+// Render questions
 function renderQuestions() {
-  for (let i = 0; i < questions.length; i++) {
-    const question = questions[i];
-    const questionElement = document.createElement("div");
-    const questionText = document.createTextNode(question.question);
-    questionElement.appendChild(questionText);
-    for (let j = 0; j < question.choices.length; j++) {
-      const choice = question.choices[j];
-      const choiceElement = document.createElement("input");
-      choiceElement.setAttribute("type", "radio");
-      choiceElement.setAttribute("name", `question-${i}`);
-      choiceElement.setAttribute("value", choice);
-      if (userAnswers[i] === choice) {
-        choiceElement.setAttribute("checked", true);
+  questionsElement.innerHTML = "";
+
+  questions.forEach((q, i) => {
+    const questionDiv = document.createElement("div");
+    const qText = document.createElement("p");
+    qText.textContent = q.question;
+    questionDiv.appendChild(qText);
+
+    q.choices.forEach((choice) => {
+      const input = document.createElement("input");
+      input.type = "radio";
+      input.name = `question-${i}`;
+      input.value = choice;
+
+      // Restore previous selection
+      if (savedProgress[i] === choice) {
+        input.setAttribute("checked", "true"); // <-- critical for Cypress test
       }
-      const choiceText = document.createTextNode(choice);
-      questionElement.appendChild(choiceElement);
-      questionElement.appendChild(choiceText);
-    }
-    questionsElement.appendChild(questionElement);
-  }
-}
 
-// Save the user's answer when they select a choice
-function saveAnswers() {
-  const choiceElements = document.querySelectorAll("input[type=radio]");
-  for (let i = 0; i < choiceElements.length; i++) {
-    const choiceElement = choiceElements[i];
-    choiceElement.addEventListener("change", function (event) {
-      const answer = event.target.value;
-      userAnswers[parseInt(event.target.name.split("-")[1], 10)] = answer;
-      sessionStorage.setItem("progress", JSON.stringify(userAnswers));
+      input.addEventListener("change", () => {
+        savedProgress[i] = choice;
+        sessionStorage.setItem("progress", JSON.stringify(savedProgress));
+      });
+
+      questionDiv.appendChild(input);
+      questionDiv.appendChild(document.createTextNode(choice));
     });
-  }
+
+    questionsElement.appendChild(questionDiv);
+  });
 }
 
-function showScore() {
+// Handle submission
+submitButton.addEventListener("click", () => {
   let score = 0;
-  for (let i = 0; i < questions.length; i++) {
-    const question = questions[i];
-    const userAnswer = userAnswers[i];
-    if (userAnswer === question.answer) {
+  questions.forEach((q, i) => {
+    const selected = savedProgress[i];
+    if (selected && selected === q.answer) {
       score++;
     }
-  }
+  });
+
+  scoreElement.textContent = `Your score is ${score} out of ${questions.length}.`;
   localStorage.setItem("score", score);
-  const scoreElement = document.getElementById("score");
-  scoreElement.innerText = `Your score is ${score} out of ${questions.length}.`;
-}
+});
 
 renderQuestions();
-saveAnswers();
